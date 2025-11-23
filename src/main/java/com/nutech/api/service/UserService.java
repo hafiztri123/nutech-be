@@ -1,0 +1,97 @@
+package com.nutech.api.service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.nutech.api.dto.request.UpdateProfileRequest;
+import com.nutech.api.dto.response.GetProfileResponse;
+import com.nutech.api.exception.InvalidCredentialsException;
+import com.nutech.api.exception.InvalidFileFormatException;
+import com.nutech.api.model.User;
+import com.nutech.api.repository.UserRepository;
+
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+    private final FileStorageService fileStorageService;
+
+    private final String ApiPath;
+
+    public UserService(UserRepository userRepository,
+        FileStorageService fileStorageService,
+            @Value("${api.path}") String ApiPath) {
+        this.userRepository = userRepository;
+        this.fileStorageService = fileStorageService;
+        this.ApiPath = ApiPath;
+    }
+
+    public GetProfileResponse getProfile(String userEmail) {
+        User user = userRepository.findByEmail(userEmail).orElseThrow(
+                () -> new InvalidCredentialsException("username atau password salah"));
+
+        if (user.getProfileImage() != null) {
+            user.setProfileImage(ApiPath + "/" + user.getProfileImage()); 
+        }
+
+         return new GetProfileResponse(
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getProfileImage());
+    }
+
+    @Transactional
+    public GetProfileResponse updateProfile(String userEmail, UpdateProfileRequest request) {
+        userRepository.updateProfile(request.getFirstName(), request.getLastName(), userEmail);
+
+        return getProfile(userEmail);
+
+    }
+
+    @Transactional
+    public GetProfileResponse updateProfileImage(MultipartFile file, String userEmail) {
+        try {
+
+            String contentType = file.getContentType();
+
+            if (file.isEmpty() || contentType == null ||
+                    (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
+                throw new InvalidFileFormatException("Format image tidak sesuai");
+            }
+
+            User user = userRepository.findByEmail(userEmail).orElseThrow(
+                    () -> new InvalidCredentialsException("username atau password salah"));
+
+            if (user.getProfileImage() != null) {
+                fileStorageService.deleteFile(user.getProfileImage());
+            }
+
+            String fileName = fileStorageService.storeFile(file);
+
+            userRepository.updateProfileImage(fileName, userEmail);
+
+            GetProfileResponse resp = getProfile(userEmail);
+
+
+            return new GetProfileResponse(
+                    resp.getEmail(),
+                    resp.getFirstName(),
+                    resp.getLastName(),
+                    resp.getProfileImage());
+        } catch (InvalidFileFormatException e) {
+            throw new InvalidFileFormatException(e.getMessage());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating user profile image", e);
+        }
+    }
+
+}
