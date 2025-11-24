@@ -55,13 +55,13 @@ public class UserService {
     public GetProfileResponse updateProfileImage(MultipartFile file, String userEmail) {
         try {
 
-            if (file == null) {
+            if (file == null || file.isEmpty()) {
                 throw new InvalidFileFormatException("File tidak boleh kosong");
             }
 
             String contentType = file.getContentType();
 
-            if (file.isEmpty() || contentType == null ||
+            if (contentType == null ||
                     (!contentType.equals("image/jpeg") && !contentType.equals("image/png"))) {
                 throw new InvalidFileFormatException("Format image tidak sesuai");
             }
