@@ -1,5 +1,7 @@
 package com.nutech.api.config;
 
+import java.nio.file.Paths;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -13,8 +15,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/**").addResourceLocations(
-            "file:" + uploadDir + "/"
+        registry.addResourceHandler("/image/**").addResourceLocations(
+                "file:" + Paths.get(uploadDir).toAbsolutePath().toString() + "/"
         );
     }
 }

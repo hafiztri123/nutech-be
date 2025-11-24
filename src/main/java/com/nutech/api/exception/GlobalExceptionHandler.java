@@ -10,6 +10,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.nutech.api.dto.response.GenericResponse;
@@ -85,6 +87,18 @@ public class GlobalExceptionHandler {
         public ResponseEntity<GenericResponse<Void>> handleInvalidAction(InvalidAction ex) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                 .body(new GenericResponse<>(102, ex.getMessage()));
+        }
+
+        @ExceptionHandler(NoHandlerFoundException.class)
+        public ResponseEntity<GenericResponse<Void>> handleNotFound(NoHandlerFoundException ex) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(new GenericResponse<>(404, "Url tidak ditemukan"));
+        }
+
+        @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+        public ResponseEntity<GenericResponse<Void>> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+                return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                                .body(new GenericResponse<>(405, "Method tidak didukung"));
         }
 
         @ExceptionHandler(Exception.class)
