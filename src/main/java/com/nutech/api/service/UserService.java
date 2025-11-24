@@ -1,10 +1,5 @@
 package com.nutech.api.service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -59,6 +54,10 @@ public class UserService {
     @Transactional
     public GetProfileResponse updateProfileImage(MultipartFile file, String userEmail) {
         try {
+
+            if (file == null) {
+                throw new InvalidFileFormatException("File tidak boleh kosong");
+            }
 
             String contentType = file.getContentType();
 

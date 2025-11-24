@@ -19,7 +19,7 @@ public class BalanceRepository {
 
     public void initializeBalance(UUID userId) {
         String sql = "INSERT INTO balances (user_id, balance) VALUES (?, ?)";
-        
+
         try {
             jdbcTemplate.execute((Connection conn) -> {
                 try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -33,5 +33,11 @@ public class BalanceRepository {
             throw new RuntimeException("Error initializing balance", e);
         }
     }
-    
+
+    public void updateBalance(UUID userId, Long balance) {
+        String sql = "UPDATE balances SET balance = balance + ?, updated_at = NOW() WHERE user_id = ?";
+
+        jdbcTemplate.update(sql, balance, userId);
+    }
+
 }
