@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.nutech.api.dto.request.PaginationRequest;
 import com.nutech.api.dto.response.GetTransactionHistory;
 import com.nutech.api.model.Balance;
 import com.nutech.api.model.Transaction;
