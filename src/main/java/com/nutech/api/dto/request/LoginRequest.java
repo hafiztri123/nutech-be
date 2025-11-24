@@ -3,7 +3,7 @@ package com.nutech.api.dto.request;
 import jakarta.validation.constraints.Email;
 
 public class LoginRequest {
-    @Email(message = "Parameter email tidak valid")
+    @Email(message = "Parameter email tidak sesuai format")
     private String email;
 
     private String password;
