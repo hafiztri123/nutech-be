@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.nutech.api.model.User;
@@ -46,7 +47,7 @@ public class UserRepository {
         String sql = "SELECT id, email, password, first_name, last_name, profile_image, created_at, updated_at FROM users WHERE email = ?";
 
         try {
-            Optional<User> result = jdbc.queryForObject(sql, (rs, rowNum) -> {
+            User result = jdbc.queryForObject(sql, (rs, rowNum) -> {
                 User user = new User();
                 user.setId(rs.getObject("id", UUID.class));
                 user.setEmail(rs.getString("email"));
@@ -56,16 +57,12 @@ public class UserRepository {
                 user.setProfileImage(rs.getString("profile_image"));
                 user.setCreatedAt(rs.getObject("created_at", LocalDateTime.class));
                 user.setUpdatedAt(rs.getObject("updated_at", LocalDateTime.class));
-                return Optional.of(user);
+                return user;
             }, email);
 
-            if (result.isEmpty()) {
-                return Optional.empty();
-            }
-
-            return result;
-        } catch (Exception e) {
-            throw new RuntimeException("Error getting user by email", e);
+            return Optional.of(result);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 

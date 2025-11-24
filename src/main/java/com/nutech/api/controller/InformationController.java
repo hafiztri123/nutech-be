@@ -31,7 +31,7 @@ public class InformationController {
                 new GenericResponse<List<GetBannerResponse>>(0, "Sukses", response));
     }
 
-    @GetMapping("/service")
+    @GetMapping("/services")
     public ResponseEntity<GenericResponse<List<GetServiceResponse>>> getServices() {
 
         List<GetServiceResponse> response = informationService.getServices();
