@@ -102,9 +102,9 @@ public class TransactionService {
             return resp;
 
         } catch (ItemNotFoundException ex) {
-            throw new ItemNotFoundException(ex.getMessage());
+            throw ex;
         }  catch (InvalidAction ex) {
-            throw new InvalidAction(ex.getMessage());
+            throw ex;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

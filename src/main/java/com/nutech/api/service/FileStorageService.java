@@ -53,7 +53,7 @@ public class FileStorageService {
             }
             Files.deleteIfExists(filePath);
         } catch (InvalidAction ex) {
-            throw new InvalidAction(ex.getMessage());
+            throw ex;
         } catch (IOException ex) {
             throw new RuntimeException(ex.getMessage());
 
