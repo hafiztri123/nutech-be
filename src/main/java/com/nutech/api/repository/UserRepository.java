@@ -58,7 +58,7 @@ public class UserRepository {
                 user.setCreatedAt(rs.getObject("created_at", LocalDateTime.class));
                 user.setUpdatedAt(rs.getObject("updated_at", LocalDateTime.class));
                 return user;
-            }, email);
+            }, email.toLowerCase());
 
             return Optional.of(result);
         } catch (EmptyResultDataAccessException e) {
@@ -72,7 +72,7 @@ public class UserRepository {
         try {
             return jdbc.queryForObject(sql, (rs, rowNum) -> {
                 return rs.getInt(1);
-            }, email) > 0;
+            }, email.toLowerCase()) > 0;
         } catch (Exception e) {
             throw new RuntimeException("Error checking if user exists", e);
         }
@@ -86,7 +86,7 @@ public class UserRepository {
                 ps.setString(1, firstName);
                 ps.setString(2, lastName);
                 ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
-                ps.setString(4, email);
+                ps.setString(4, email.toLowerCase());
             });
         } catch (Exception e) {
             throw new RuntimeException("Error updating user profile", e);
@@ -99,7 +99,7 @@ public class UserRepository {
             jdbc.update(sql, ps -> {
                 ps.setString(1, profileImage);
                 ps.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
-                ps.setString(3, email);
+                ps.setString(3, email.toLowerCase());
             });
         } catch (Exception e) {
             throw new RuntimeException("Error updating user profile image", e);

@@ -69,12 +69,13 @@ public class TransactionService {
 
             com.nutech.api.model.Service targetService = informationRepository.getServiceByCode(serviceCode);
 
-            if (targetService.getServiceTariff() > getBalance(userId).getBalance()) {
-                throw new InvalidAction("Saldo tidak mencukupi");
+            Integer rowsAffected = balanceRepository.updateBalance(userId, -targetService.getServiceTariff());
 
+            if (rowsAffected == 0) {
+                throw new InvalidAction("Saldo anda tidak mencukupi");
+                
             }
 
-            balanceRepository.updateBalance(userId, -targetService.getServiceTariff());
 
             String invoiceNumber = "INV-" + UUID.randomUUID();
 

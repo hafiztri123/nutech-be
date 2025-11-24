@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.nutech.api.exception.InvalidAction;
+
 @Service
 public class FileStorageService {
 
@@ -18,7 +20,7 @@ public class FileStorageService {
 
     public FileStorageService(@Value("${file.upload-dir}") String uploadDir) {
         this.fileStorageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
-        
+
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {
@@ -30,14 +32,14 @@ public class FileStorageService {
         try {
             String originalFilename = file.getOriginalFilename();
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            
+
             String fileName = UUID.randomUUID().toString() + extension;
-            
+
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-            
+
             return fileName;
-            
+
         } catch (IOException ex) {
             throw new RuntimeException("Could not store file", ex);
         }
@@ -46,9 +48,15 @@ public class FileStorageService {
     public void deleteFile(String fileName) {
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            if (!filePath.startsWith(this.fileStorageLocation)) {
+                throw new InvalidAction("Could not delete file outside of upload dir");
+            }
             Files.deleteIfExists(filePath);
+        } catch (InvalidAction ex) {
+            throw new InvalidAction(ex.getMessage());
         } catch (IOException ex) {
-            throw new RuntimeException("Could not delete file", ex);
+            throw new RuntimeException(ex.getMessage());
+
         }
     }
 }

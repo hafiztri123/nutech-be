@@ -9,9 +9,11 @@ import jakarta.validation.constraints.Size;
 public class RegistrationRequest {
     
     @Email(message = "Parameter email tidak valid")
+    @NotBlank(message = "Parameter email tidak boleh kosong")
     private String email;
 
     @Size(min = 8, message = "Parameter password minimal 8 karakter")
+    @NotBlank(message = "Parameter password tidak boleh kosong")
     private String password;
 
     @NotBlank(message = "Parameter first name tidak boleh kosong")

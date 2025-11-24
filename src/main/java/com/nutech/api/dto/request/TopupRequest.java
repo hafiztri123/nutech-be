@@ -3,11 +3,12 @@ package com.nutech.api.dto.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 
 public class TopupRequest {
     @JsonProperty("top_up_amount")
     @Min(value = 1, message = "Parameter amount hanya boleh angka dan tidak boleh lebih kecil dari 0")
-
+    @NotNull(message = "Parameter amount hanya boleh angka dan tidak boleh lebih kecil dari 0")
     private Long topupAmount;
 
     public TopupRequest() {

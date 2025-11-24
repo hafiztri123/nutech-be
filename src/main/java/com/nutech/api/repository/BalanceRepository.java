@@ -34,10 +34,10 @@ public class BalanceRepository {
         }
     }
 
-    public void updateBalance(UUID userId, Long balance) {
-        String sql = "UPDATE balances SET balance = balance + ?, updated_at = NOW() WHERE user_id = ?";
+    public Integer updateBalance(UUID userId, Long balance) {
+        String sql = "UPDATE balances SET balance = balance + ?, updated_at = NOW() WHERE user_id = ? AND balance + ? >= 0";
 
-        jdbcTemplate.update(sql, balance, userId);
+        return jdbcTemplate.update(sql, balance, userId, balance);
     }
 
 }
