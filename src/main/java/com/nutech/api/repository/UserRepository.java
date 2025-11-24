@@ -34,8 +34,8 @@ public class UserRepository {
             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getEmail().toLowerCase());
             ps.setString(2, user.getPassword());
-            ps.setString(3, user.getFirstName().toLowerCase());
-            ps.setString(4, user.getLastName().toLowerCase());
+            ps.setString(3, user.getFirstName());
+            ps.setString(4, user.getLastName());
             return ps;
         }, keyHolder);
 
